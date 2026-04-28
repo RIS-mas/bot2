@@ -33,9 +33,11 @@ class EnlightenBot(commands.Bot):
         )
 
     async def setup_hook(self) -> None:
-        for ext in ("cogs.invites", "cogs.pricing", "cogs.tools"):
+        for ext in ("cogs.invites", "cogs.pricing", "cogs.tools", "cogs.pricelist_ui"):
             await self.load_extension(ext)
             LOGGER.info("Loaded extension: %s", ext)
+        await self.tree.sync()
+        LOGGER.info("Application commands synced.")
 
     async def on_ready(self) -> None:
         LOGGER.info("Logged in as %s (%s)", self.user, self.user.id if self.user else "unknown")
