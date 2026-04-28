@@ -20,27 +20,38 @@ class Tools(commands.Cog):
     @commands.cooldown(2, 10, commands.BucketType.user)
     @commands.command(name="commission")
     async def commission(self, ctx: commands.Context, user: discord.Member, price: float) -> None:
-        commission = price * COMMISSION_RATE
-        total = price + commission
-
-        embed = make_embed("Commission Calculation")
-        embed.add_field(name="User", value=user.mention, inline=False)
-        embed.add_field(name="Original Price", value=f"${price:,.2f}", inline=True)
-        embed.add_field(name="Commission (7.5%)", value=f"${commission:,.2f}", inline=True)
-        embed.add_field(name="Total Amount", value=f"${total:,.2f}", inline=False)
+        commission_earned = price * COMMISSION_RATE
+        embed = make_embed("Commission Earned")
+        embed.add_field(name="Customer", value=user.mention, inline=False)
+        embed.add_field(name="Service Price", value=f"${price:,.2f}", inline=True)
+        embed.add_field(name="Commission Rate", value="7.5%", inline=True)
+        embed.add_field(name="Commission Earned", value=f"${commission_earned:,.2f}", inline=False)
         await ctx.send(embed=embed)
 
     @commands.cooldown(2, 10, commands.BucketType.user)
-    @commands.command(name="tax")
-    async def tax(self, ctx: commands.Context, user: discord.Member, price: float) -> None:
+    @commands.command(name="tax_to_pay")
+    async def tax_to_pay(self, ctx: commands.Context, user: discord.Member, price: float) -> None:
         tax_amount = price * TAX_RATE
-        total = price + tax_amount
+        total_to_pay = price + tax_amount
 
-        embed = make_embed("Tax Calculation")
+        embed = make_embed("Tax To Pay")
         embed.add_field(name="User", value=user.mention, inline=False)
         embed.add_field(name="Base Price", value=f"${price:,.2f}", inline=True)
         embed.add_field(name="Tax (10%)", value=f"${tax_amount:,.2f}", inline=True)
-        embed.add_field(name="Total Price", value=f"${total:,.2f}", inline=False)
+        embed.add_field(name="Total to Pay", value=f"${total_to_pay:,.2f}", inline=False)
+        await ctx.send(embed=embed)
+
+    @commands.cooldown(2, 10, commands.BucketType.user)
+    @commands.command(name="tax_paid")
+    async def tax_paid(self, ctx: commands.Context, user: discord.Member, price: float) -> None:
+        tax_amount = price * TAX_RATE
+        final_amount = price - tax_amount
+
+        embed = make_embed("Tax Paid")
+        embed.add_field(name="User", value=user.mention, inline=False)
+        embed.add_field(name="Base Price", value=f"${price:,.2f}", inline=True)
+        embed.add_field(name="Tax (10%)", value=f"${tax_amount:,.2f}", inline=True)
+        embed.add_field(name="Final Amount Received", value=f"${final_amount:,.2f}", inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(name="calc")
@@ -78,7 +89,8 @@ class Tools(commands.Cog):
     async def help_command(self, ctx: commands.Context) -> None:
         embed = make_embed("Help", "Available commands")
         embed.add_field(name=">commission @user <price>", value="Calculate 7.5% commission.", inline=False)
-        embed.add_field(name=">tax @user <price>", value="Add 10% tax.", inline=False)
+        embed.add_field(name=">tax_to_pay @user <price>", value="Add 10% tax to the base price.", inline=False)
+        embed.add_field(name=">tax_paid @user <price>", value="Deduct 10% tax from base price.", inline=False)
         embed.add_field(name=">invitedby @user", value="Show inviter for a user.", inline=False)
         embed.add_field(name=">pricelist / >price <service>", value="View service pricing.", inline=False)
         embed.add_field(name=">setprice / >updateprice / >removeprice", value="Admin price management.", inline=False)
